@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import AuthContext from './AuthContext'
 
-function PrivateRoutes({children,...rest}) {
+function PrivateRoutes() {
     
     let {user} = useContext(AuthContext)
 

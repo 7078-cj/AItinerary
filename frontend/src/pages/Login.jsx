@@ -1,10 +1,9 @@
 import React, { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 
 function Login() {
-  let { loginUser } = useContext(AuthContext)
-  const nav = useNavigate()
+  const { loginUser, loginError } = useContext(AuthContext)
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -41,11 +40,13 @@ function Login() {
             </button>
           </form>
 
+          {loginError ? <p className="mt-3 text-center text-sm text-rose-600">{loginError}</p> : null}
+
           <p className="mt-4 text-center text-gray-600 text-sm">
             Don't have an account?{' '}
-            <a href="/register" className="text-cyan-500 hover:underline">
+            <Link to="/register" className="text-cyan-500 hover:underline">
               Register
-            </a>
+            </Link>
           </p>
         </div>
       </div>
