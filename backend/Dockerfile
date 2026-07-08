@@ -1,21 +1,23 @@
-# Use lightweight Python image
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
-# Prevent Python from buffering stdout/stderr
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
-# Set working directory
 WORKDIR /django
 
-# Copy requirements and install
-COPY requirements.txt requirements.txt
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libffi-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project code
 COPY . .
 
-# Expose the port the Django app will run on
 EXPOSE 8000
 
-# Run database migrations and start the server
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
