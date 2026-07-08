@@ -3,7 +3,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .Views.user_views import registerUser, MyTokenObtainPairView, test, generate_itininerary
+from .Views.user_views import registerUser, MyTokenObtainPairView, test, generate_itininerary, TripListCreateView, TripRetrieveUpdateDestroyView
 
 
 urlpatterns = [
@@ -11,7 +11,9 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', registerUser, name='register_user'),
     path('test/', test, name='test'),
-    path('itinerary/', generate_itininerary, name="Generate Itinerary")
+    path('itinerary/', generate_itininerary, name="Generate Itinerary"),
+    path("trips/", TripListCreateView.as_view(), name="trip-list-create"),
+    path("trips/<int:pk>/", TripRetrieveUpdateDestroyView.as_view(), name="trip-detail"),
     
     
 ]

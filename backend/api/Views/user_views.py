@@ -1,7 +1,7 @@
 import time
 
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -12,7 +12,10 @@ from ..travel.ai import create_itinerary
 from ..travel.geocoder import enrich_itinerary
 from ..travel.optimizer import optimize_itinerary
 from ..travel.routing import calculate_routes
+from rest_framework import generics, permissions
 
+from ..models import Trip
+from ..serializers import TripListSerializer, TripSerializer
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -47,6 +50,7 @@ def test(request):
 
 
 @api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
 def generate_itininerary(request):
 
     print("=" * 80)
@@ -165,4 +169,61 @@ def generate_itininerary(request):
                 "message": str(e),
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    
+
+
+
+
+
+class IsOwner(permissions.BasePermission):
+    """Object-level check: only the trip's owner can touch it."""
+
+    def has_object_permission(self, request, view, obj):
+        return obj.user_id == request.user.id
+
+
+class TripListCreateView(generics.ListCreateAPIView):
+    """
+    GET  /trips/   -> list the logged-in user's trips
+    POST /trips/   -> create a new trip for the logged-in user
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return (
+            Trip.objects.filter(user=self.request.user)
+            .select_related("budget_breakdown")
+            .prefetch_related("daily_itinerary__meal_plan", "daily_itinerary__to_go_locations")
+        )
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return TripSerializer
+        return TripListSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class TripRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET    /trips/<pk>/  -> retrieve a single trip (owner only)
+    PUT    /trips/<pk>/  -> full update
+    PATCH  /trips/<pk>/  -> partial update
+    DELETE /trips/<pk>/  -> delete
+    """
+
+    serializer_class = TripSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        # Scoping the queryset to the user is a second line of defense
+        # in addition to IsOwner, and keeps get_object_or_404 from ever
+        # leaking a 404 vs 403 distinction to other users' trips.
+        return (
+            Trip.objects.filter(user=self.request.user)
+            .select_related("budget_breakdown")
+            .prefetch_related("daily_itinerary__meal_plan", "daily_itinerary__to_go_locations")
         )
