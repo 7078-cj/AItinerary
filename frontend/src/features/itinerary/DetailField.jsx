@@ -5,8 +5,8 @@ function DetailField({ label, value, className = '' }) {
 
   return (
     <div className={className}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-sm text-slate-700">{value}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-[#4E6B72]">{label}</p>
+      <p className="mt-1 text-sm text-[#C7D6D9]">{value}</p>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { generateItinerary } from '../api/itinerary'
 import { createTrip, deleteTrip, getTrip, listTrips } from '../api/trips'
 import AppNavbar from '../components/AppNavbar'
@@ -24,6 +24,9 @@ function DashBoard() {
   const [deletingTripId, setDeletingTripId] = useState(null)
   const [error, setError] = useState('')
 
+  // presentational only — drives the crossfade when `view` changes
+  const [viewVisible, setViewVisible] = useState(true)
+
   const loadTrips = useCallback(async () => {
     const token = getAccessToken()
     if (!token) {
@@ -46,6 +49,21 @@ function DashBoard() {
   useEffect(() => {
     loadTrips()
   }, [loadTrips])
+
+  useEffect(() => {
+    setViewVisible(false)
+    const timeout = setTimeout(() => setViewVisible(true), 20)
+    return () => clearTimeout(timeout)
+  }, [view])
+
+  // presentational only — derived summary numbers for the hero band, no new fetches
+  const stats = useMemo(() => {
+    const count = trips.length
+    const totalBudget = trips.reduce((sum, trip) => sum + (Number(trip.budget_total) || 0), 0)
+    const latest = trips[0] || null
+
+    return { count, totalBudget, latest }
+  }, [trips])
 
   const openItinerary = (result) => {
     const normalized = normalizeItineraryResult(result)
@@ -152,38 +170,111 @@ function DashBoard() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <AppNavbar title={view === 'itinerary' ? 'Trip Itinerary' : 'Your Trips'} />
+    <main className="min-h-screen bg-[#0A1418]">
+      <AppNavbar title={view === 'itinerary' ? 'Trip itinerary' : 'Your trips'} />
 
-      <div className="mx-auto max-w-6xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
         {error ? (
-          <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>
+          <p className="mb-5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">
+            {error}
+          </p>
         ) : null}
 
-        {view === 'home' ? (
-          <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-            <GenerateItineraryForm onGenerate={handleGenerate} loading={generating} error={generating ? '' : error} />
-            <TripList
-              trips={trips}
-              loading={loadingTrips}
-              onOpenTrip={handleOpenTrip}
-              onDeleteTrip={handleDeleteTrip}
-              deletingTripId={deletingTripId}
+        <div
+          className={`transition-all duration-300 ease-out ${
+            viewVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+          }`}
+        >
+          {view === 'home' ? (
+            <div className="space-y-6">
+              {/* Hero band */}
+              <section className="relative overflow-hidden rounded-2xl border border-[#23414D] bg-[#11202A] px-6 py-8 sm:px-8">
+                <svg
+                  className="pointer-events-none absolute inset-0 h-full w-full opacity-40"
+                  preserveAspectRatio="none"
+                  viewBox="0 0 800 200"
+                >
+                  <path
+                    d="M -20 160 C 120 120, 180 80, 320 90 C 460 100, 520 40, 680 20 C 740 12, 780 20, 830 10"
+                    fill="none"
+                    stroke="#2CB1A3"
+                    strokeWidth="1.5"
+                    strokeDasharray="5 7"
+                    opacity="0.5"
+                  />
+                </svg>
+
+                <div className="relative z-10">
+                  <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#2CB1A3]">
+                    Aitinary
+                  </p>
+                  <h1 className="mt-2 text-2xl font-semibold text-[#E8F1F2] sm:text-3xl">
+                    Where's the next route?
+                  </h1>
+                  <p className="mt-2 max-w-lg text-sm text-[#8CA7AC]">
+                    Describe a trip below and Aitinary generates, geocodes, and routes it for you —
+                    or open a saved trip from your manifest.
+                  </p>
+
+                  <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+                    <div className="rounded-xl border border-[#23414D] bg-[#0A1418] px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-wide text-[#4E6B72]">Saved trips</p>
+                      <p className="mt-1 font-mono text-xl font-semibold text-[#E8F1F2]">
+                        {stats.count}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-[#23414D] bg-[#0A1418] px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-wide text-[#4E6B72]">
+                        Total planned
+                      </p>
+                      <p className="mt-1 font-mono text-xl font-semibold text-[#D9A05B]">
+                        {stats.totalBudget.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="col-span-2 rounded-xl border border-[#23414D] bg-[#0A1418] px-4 py-3 sm:col-span-1">
+                      <p className="text-[11px] uppercase tracking-wide text-[#4E6B72]">
+                        Latest destination
+                      </p>
+                      <p className="mt-1 truncate text-sm font-semibold text-[#E8F1F2]">
+                        {stats.latest ? `${stats.latest.destination}, ${stats.latest.country}` : '—'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Console grid */}
+              <div className="grid gap-5 lg:grid-cols-[1fr_1.3fr]">
+                <div className="lg:sticky lg:top-24 lg:h-fit">
+                  <GenerateItineraryForm
+                    onGenerate={handleGenerate}
+                    loading={generating}
+                    error={generating ? '' : error}
+                  />
+                </div>
+                <TripList
+                  trips={trips}
+                  loading={loadingTrips}
+                  onOpenTrip={handleOpenTrip}
+                  onDeleteTrip={handleDeleteTrip}
+                  deletingTripId={deletingTripId}
+                />
+              </div>
+            </div>
+          ) : (
+            <ItineraryViewer
+              itinerary={itinerary}
+              activeDay={activeDay}
+              onDayChange={setActiveDay}
+              onBack={handleBackHome}
+              onSave={handleSaveTrip}
+              onDelete={() => handleDeleteTrip(itinerary.id)}
+              saving={saving}
+              deleting={deletingTripId === itinerary?.id}
+              isSaved={Boolean(itinerary?.id)}
             />
-          </div>
-        ) : (
-          <ItineraryViewer
-            itinerary={itinerary}
-            activeDay={activeDay}
-            onDayChange={setActiveDay}
-            onBack={handleBackHome}
-            onSave={handleSaveTrip}
-            onDelete={() => handleDeleteTrip(itinerary.id)}
-            saving={saving}
-            deleting={deletingTripId === itinerary?.id}
-            isSaved={Boolean(itinerary?.id)}
-          />
-        )}
+          )}
+        </div>
       </div>
     </main>
   )

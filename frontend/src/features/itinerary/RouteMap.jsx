@@ -5,18 +5,18 @@ import MapController from './MapController'
 import { fetchOsrmRouteChain } from './osrm'
 
 const markerStyles = {
-  hotel: 'bg-indigo-600',
-  restaurant: 'bg-rose-600',
-  activity: 'bg-emerald-600',
+  hotel: 'bg-[#2563EB]',
+  restaurant: 'bg-[#D9A05B]',
+  activity: 'bg-[#2CB1A3]',
 }
 
 function createMarkerIcon(kind, label, selected = false) {
   const color = markerStyles[kind] || markerStyles.activity
-  const ring = selected ? 'ring-4 ring-yellow-300' : ''
+  const ring = selected ? 'ring-2 ring-offset-2 ring-offset-[#0A1418] ring-[#F5D97A]' : ''
 
   return L.divIcon({
     className: 'custom-div-marker',
-    html: `<span class="flex h-7 w-7 items-center justify-center rounded-full ${color} ${ring} border-2 border-white text-xs font-bold text-white shadow">${label}</span>`,
+    html: `<span class="flex h-7 w-7 items-center justify-center rounded-full ${color} ${ring} border-2 border-[#0A1418] text-xs font-bold text-white shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${label}</span>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
   })
@@ -174,42 +174,43 @@ function RouteMap({
   }, [day.day, day.restaurants, hotel])
 
   return (
-    <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <header className="border-b border-slate-200 px-4 py-3">
-        <h2 className="text-base font-semibold text-slate-900">MapCN Routing View</h2>
-        <p className="text-sm text-slate-500">
-          Numbered stops show visit order. Restaurant routes use OSRM. Click restaurants to focus.
+    <section className="overflow-hidden rounded-xl border border-[#23414D] bg-[#11202A]">
+      <header className="border-b border-[#23414D] px-4 py-3">
+        <h2 className="text-base font-semibold text-[#E8F1F2]">Route map</h2>
+        <p className="text-xs text-[#8CA7AC]">
+          Numbered stops show visit order · dashed lines are restaurant routes
         </p>
-        <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-600">
+        <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#8CA7AC]">
           <span className="inline-flex items-center gap-1">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2563EB] text-[10px] font-bold text-white">
               H
             </span>
             Hotel
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#D9A05B] text-[10px] font-bold text-white">
               R
             </span>
             Restaurant
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2CB1A3] text-[10px] font-bold text-white">
               1
             </span>
             Attraction order
           </span>
         </div>
         {loadingRestaurantRoutes ? (
-          <p className="mt-2 text-xs text-slate-500">Loading restaurant routes from OSRM...</p>
+          <p className="mt-2 text-xs text-[#4E6B72]">Loading restaurant routes...</p>
         ) : null}
       </header>
 
       <div className="h-[360px] w-full">
         <MapContainer center={mapData.center} zoom={12} scrollWheelZoom className="h-full w-full">
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            subdomains="abcd"
           />
 
           <MapController markers={mapData.markers} focusLatLng={focusLatLng} dayKey={day.day} />
@@ -218,7 +219,7 @@ function RouteMap({
             <Polyline
               key={`activity-segment-${index}`}
               positions={segment}
-              pathOptions={{ color: '#047857', weight: 4, opacity: 0.9 }}
+              pathOptions={{ color: '#2CB1A3', weight: 4, opacity: 0.9 }}
             />
           ))}
 
@@ -226,7 +227,7 @@ function RouteMap({
             <Polyline
               key={`restaurant-segment-${index}`}
               positions={segment}
-              pathOptions={{ color: '#e11d48', weight: 4, opacity: 0.85, dashArray: '8 8' }}
+              pathOptions={{ color: '#D9A05B', weight: 4, opacity: 0.85, dashArray: '8 8' }}
             />
           ))}
 

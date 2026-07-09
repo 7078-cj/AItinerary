@@ -44,30 +44,38 @@ function DayOverview({ day, hotel, currency = 'PHP' }) {
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-      <div className="space-y-4">
+      <div className="space-y-5">
         <DayBudgetCard day={day} currency={currency} />
 
-        <MealPlanList
-          meals={day.meal_plan || []}
-          currency={currency}
-          onRestaurantClick={handleRestaurantClick}
-          selectedRestaurantKey={selectedRestaurantKey}
-        />
+        <div>
+          <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#4E6B72]">Meals</p>
+          <MealPlanList
+            meals={day.meal_plan || []}
+            currency={currency}
+            onRestaurantClick={handleRestaurantClick}
+            selectedRestaurantKey={selectedRestaurantKey}
+          />
+        </div>
 
-        <div className="space-y-3">
-          {(day.places || []).map((place) => (
-            <PlaceCard
-              key={`${day.day}-${place.order}-${place.name}`}
-              place={place}
-              currency={currency}
-              isSelected={selectedPlaceOrder === place.order}
-              onPlaceClick={handlePlaceClick}
-            />
-          ))}
+        <div>
+          <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#4E6B72]">
+            Stops, in order
+          </p>
+          <div className="space-y-3">
+            {(day.places || []).map((place) => (
+              <PlaceCard
+                key={`${day.day}-${place.order}-${place.name}`}
+                place={place}
+                currency={currency}
+                isSelected={selectedPlaceOrder === place.order}
+                onPlaceClick={handlePlaceClick}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="lg:sticky lg:top-5 lg:h-fit">
+      <div className="lg:sticky lg:top-24 lg:h-fit">
         <RouteMap
           day={day}
           hotel={hotel}
