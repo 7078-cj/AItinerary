@@ -4,12 +4,41 @@ import json
 import environ
 from google import genai
 from google.genai import types
+from google.genai.errors import ClientError
 from fireworks import Fireworks
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+GEMINI_MODEL_FALLBACKS = [
+    "gemini-2.5-flash-lite",
+    "gemini-3.1-flash-lite",
+    "gemini-flash-latest",  
+]
+
+
+def _call_gemini(client, prompt):
+    last_error = None
+
+    for model_name in GEMINI_MODEL_FALLBACKS:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                ),
+            )
+            return response.text
+        except ClientError as e:
+            if getattr(e, "code", None) == 404 or "NOT_FOUND" in str(e):
+                last_error = e
+                continue
+            raise
+
+    raise last_error
 
 
 def generate(prompt):
@@ -18,7 +47,6 @@ def generate(prompt):
     """
 
     use_fireworks = bool(env("FIREWORKS_AI_KEY", default=""))
-    print(env("FIREWORKS_AI_KEY", default=""))
 
     if use_fireworks:
         client = Fireworks(api_key=env("FIREWORKS_AI_KEY"))
@@ -45,15 +73,7 @@ def generate(prompt):
             text = response.choices[0].message.content
 
         else:
-            response = client.models.generate_content(
-                model="gemini-2.5-flash-lite",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                ),
-            )
-
-            text = response.text
+            text = _call_gemini(client, prompt)
 
         if not text:
             return {
@@ -80,5 +100,3 @@ def generate(prompt):
             "success": False,
             "error": str(e),
         }
-
-
