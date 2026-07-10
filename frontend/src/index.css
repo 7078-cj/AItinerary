@@ -27,7 +27,7 @@
 /* Text */
 
 .trip-themed .trip-text-primary {
-  color: var(--trip-primary-text, var(--trip-primary));
+  color: #FFFFFF;
 }
 
 .trip-themed .trip-text-secondary {

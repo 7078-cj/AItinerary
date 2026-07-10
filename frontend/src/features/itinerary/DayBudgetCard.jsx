@@ -5,7 +5,7 @@ function DayBudgetCard({ day, currency }) {
 
   return (
     <div className="rounded-xl border border-[#23414D] bg-[#11202A] p-4">
-      <p className="trip-text-primary font-mono text-xs font-semibold uppercase tracking-wide">
+      <p className="text-white font-mono text-xs font-semibold uppercase tracking-wide">
         Day {day.day}
       </p>
       <h2 className="mt-1 text-xl font-semibold text-[#E8F1F2]">{day.theme}</h2>
@@ -24,8 +24,8 @@ function DayBudgetCard({ day, currency }) {
           <p className="font-mono font-semibold text-[#E8F1F2]">{formatCurrency(budget.activities, currency)}</p>
         </div>
         <div className="trip-bg-soft rounded-lg p-3">
-          <p className="trip-text-primary text-xs">Total</p>
-          <p className="trip-text-primary font-mono font-semibold">{formatCurrency(budget.total, currency)}</p>
+          <p className="text-white text-xs">Total</p>
+          <p className="text-white font-mono font-semibold">{formatCurrency(budget.total, currency)}</p>
         </div>
       </div>
     </div>
