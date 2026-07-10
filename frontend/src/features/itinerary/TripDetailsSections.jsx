@@ -1,6 +1,18 @@
 import { useState } from 'react'
 import DetailField from './DetailField'
 
+const HEX_PATTERN = /^#[0-9a-fA-F]{6}$/
+
+// Picks black or white text based on the swatch's relative luminance,
+// so labels stay readable against light or dark palette colors.
+function getReadableTextColor(hex) {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.6 ? '#0A1418' : '#F5FAFA'
+}
+
 function AccordionSection({ id, title, isOpen, onToggle, children, badge }) {
   return (
     <section className="rounded-xl border border-[#23414D] bg-[#11202A]">
@@ -60,14 +72,25 @@ function TripDetailsSections({ trip, budgetBreakdown, travelTips }) {
                 Color palette
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {trip.vibe.color_palette.map((color) => (
-                  <span
-                    key={color}
-                    className="trip-bg-soft trip-text-primary rounded-full px-3 py-1 font-mono text-xs font-medium"
-                  >
-                    {color}
-                  </span>
-                ))}
+                {trip.vibe.color_palette.map((color) => {
+                  const isValidHex = HEX_PATTERN.test(color)
+                  const swatchColor = isValidHex ? color : '#23414D'
+                  const textColor = isValidHex ? getReadableTextColor(color) : '#8CA7AC'
+
+                  return (
+                    <span
+                      key={color}
+                      className="flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-xs font-medium"
+                      style={{
+                        backgroundColor: swatchColor,
+                        color: textColor,
+                        border: isValidHex ? 'none' : '1px solid #4E6B72',
+                      }}
+                    >
+                      {color}
+                    </span>
+                  )
+                })}
               </div>
             </div>
           ) : null}
