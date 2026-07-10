@@ -10,8 +10,9 @@
 }
 
 .trip-themed .trip-text-primary {
-  color: var(--trip-primary);
+  color: var(--trip-primary-text, var(--trip-primary));
 }
+
 
 .trip-themed .trip-bg-soft {
   background-color: var(--trip-primary-soft);
@@ -29,5 +30,5 @@
 
 .trip-themed .trip-tab-inactive:hover {
   border-color: var(--trip-primary);
-  color: var(--trip-primary);
+  color: var(--trip-primary-text, var(--trip-primary));
 }

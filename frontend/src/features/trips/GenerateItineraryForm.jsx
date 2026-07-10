@@ -55,7 +55,7 @@ function GenerateItineraryForm({ onGenerate, loading, error }) {
           Where to next?
         </h2>
         <p className="mt-2 max-w-xl text-sm text-[#8CA7AC]">
-          Describe your dream trip and Aitinary generates, geocodes, and routes it for you.
+          Describe your dream trip and Aitinerary generates, finds location, and routes for you.
         </p>
 
         <form

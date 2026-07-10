@@ -64,6 +64,43 @@ function hslToHex(h, s, l) {
   return `#${toHex(red)}${toHex(green)}${toHex(blue)}`
 }
 
+// Inverse of hslToHex — needed so we can read a resolved hex's
+// lightness back out and clamp it for text-on-dark-background use.
+function hexToHsl(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255
+  const g = parseInt(hex.slice(3, 5), 16) / 255
+  const b = parseInt(hex.slice(5, 7), 16) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const l = (max + min) / 2
+  let h = 0
+  let s = 0
+
+  if (max !== min) {
+    const d = max - min
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
+      case g: h = ((b - r) / d + 2) / 6; break
+      case b: h = ((r - g) / d + 4) / 6; break
+    }
+  }
+
+  return { h: h * 360, s: s * 100, l: l * 100 }
+}
+
+// Given a resolved palette hex, returns a variant that's guaranteed
+// legible as text against dark card backgrounds (#0A1418 / #11202A),
+// by raising its lightness if needed while keeping hue/saturation.
+function toAccessibleTextColor(hex, minLightness = 55) {
+  const { h, s, l } = hexToHsl(hex)
+  if (l >= minLightness) {
+    return hex
+  }
+  return hslToHex(h, s, minLightness)
+}
+
 export function resolvePaletteColor(name) {
   if (!name) {
     return null
@@ -102,6 +139,8 @@ export function buildTripTheme(colorPalette = []) {
       '--trip-soft': soft,
       '--trip-primary-soft': `${primary}22`,
       '--trip-secondary-soft': `${secondary}22`,
+      '--trip-primary-text': toAccessibleTextColor(primary),
+      '--trip-highlight-text': toAccessibleTextColor(highlight),
     },
     headerGradient: `linear-gradient(135deg, ${primary} 0%, ${secondary} 45%, ${accent} 100%)`,
     routeActivityColor: primary,

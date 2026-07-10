@@ -74,7 +74,7 @@ function Register() {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#2CB1A3]" />
             <span className="font-mono text-xs tracking-[0.2em] text-[#8CA7AC] uppercase">
-              Aitinary
+              Aitinerary
             </span>
           </div>
 
@@ -100,7 +100,7 @@ function Register() {
           <div className="mb-8 lg:hidden flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#2CB1A3]" />
             <span className="font-mono text-xs tracking-[0.2em] text-[#8CA7AC] uppercase">
-              Aitinary
+              Aitinerary
             </span>
           </div>
 

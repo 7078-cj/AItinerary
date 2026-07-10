@@ -38,7 +38,7 @@ function AppNavbar({ title = 'Travel Planner' }) {
           <div className="leading-tight">
             <div className="flex items-center gap-2">
               <span className="font-mono text-sm font-semibold tracking-tight text-[#E8F1F2]">
-                Aitinary
+                Aitinerary
               </span>
               <span className="hidden h-1 w-1 rounded-full bg-[#4E6B72] sm:block" />
               <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-[#4E6B72] sm:block">

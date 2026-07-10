@@ -32,7 +32,7 @@ function RestaurantCard({ meal, currency, isSelected, onRestaurantClick }) {
           </p>
         </div>
         <p className="mt-1 text-sm font-semibold text-[#E8F1F2]">{meal.restaurant}</p>
-        <p className="mt-2 text-xs text-[var(--trip-highlight)]">
+        <p className="mt-2 text-xs text-[var(--trip-highlight-text)]">
           {isClickable ? 'Tap to center on map' : 'Location unavailable on map'}
         </p>
       </button>

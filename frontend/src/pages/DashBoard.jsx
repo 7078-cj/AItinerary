@@ -206,13 +206,13 @@ function DashBoard() {
 
                 <div className="relative z-10">
                   <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#2CB1A3]">
-                    Aitinary
+                    Aitinerary
                   </p>
                   <h1 className="mt-2 text-2xl font-semibold text-[#E8F1F2] sm:text-3xl">
                     Where's the next route?
                   </h1>
                   <p className="mt-2 max-w-lg text-sm text-[#8CA7AC]">
-                    Describe a trip below and Aitinary generates, geocodes, and routes it for you —
+                    Describe a trip below and Aitinerary generates, geocodes, and routes it for you —
                     or open a saved trip from your manifest.
                   </p>
 
