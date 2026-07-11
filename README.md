@@ -1,5 +1,12 @@
 # Aitinerary
 
+<img width="1919" height="938" alt="image" src="https://github.com/user-attachments/assets/f1595233-6e3a-4661-8d9b-4c425106da99" />
+
+
+<img width="1919" height="866" alt="image" src="https://github.com/user-attachments/assets/57ace4a8-a7d9-497e-8948-38fbd5e0d774" />
+
+
+
 AI-powered travel planner built for the AMD Developer Hackathon. Aitinerary generates personalized, day-by-day trip itineraries based on your travel "vibe" — chill, adventure, luxury, or cultural — complete with an adaptive UI and clean, exportable plans.
 
 Live demo: https://amd-hackathon-pi.vercel.app
